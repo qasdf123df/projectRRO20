@@ -1,0 +1,70 @@
+volatile long leftCounter = 0;
+volatile long rightCounter = 0;
+short l = 16, r = 5; //sm
+
+void setup() {
+  pinMode(11, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(9, OUTPUT);
+  attachInterrupt(0, left, FALLING);
+  attachInterrupt(1, right, FALLING);
+  pinMode(4, INPUT);
+  pinMode(6, INPUT);
+  Serial.begin(9600);
+}
+void left() {
+  if (digitalRead(4)) {
+    leftCounter++;
+  } else {
+    leftCounter--;
+  }
+}
+void right() {
+  if (!digitalRead(6)) {
+    rightCounter++;
+  } else {
+    rightCounter--;
+  }
+}
+void stop() {
+  long ideal = leftCounter, t = millis();
+  while (millis() - t < 500) {
+    long er = ideal - leftCounter;
+    move(er * 30.0, er * 30.0);
+  }
+  move(0, 0);
+}
+
+void move(int spL, int spR) {
+  spL <= 0 ? digitalWrite(9, 0) : analogWrite(9, abs(spL));
+  spL <= 0 ? analogWrite(10, abs(spL)) : digitalWrite(10, 0);
+  spR >= 0 ? digitalWrite(11, 0) : analogWrite(11, abs(spR));
+  spR >= 0 ? analogWrite(5, abs(spR)) : digitalWrite(5, 0);
+}
+void moveEnc(int sp){
+  long currLeft = leftCounter;
+  long currRight = rightCounter;
+  float k = 20;
+  move((leftCounter-currLeft)*k + sp, sp - (leftCounter-currLeft)*k);
+}
+
+void loop() {
+  // for (int i = -256; i < 256; i++) {
+  //   move(i, i);
+  //   delay(30);
+  // }
+  // for (int i = 256; i > -256; i--) {
+  //   move(i, i);
+  //   delay(30);
+  // }
+  move(0, 255);     
+  // delay(500);a
+  // Serial.print(leftCounter);
+  // Serial.print(' ');
+  // Serial.print(rightCounter);
+  // Serial.print('\n');
+
+  // moveEnc(255);
+
+}
