@@ -1,0 +1,41 @@
+from math import asinh
+
+
+def get_x_y(lisd):
+	return lisd[0]['x'], lisd[0]['y'], lisd[1]['x'], lisd[1]['y']
+
+def get_dist(old_x, old_y, curr_x, curr_y): # movement near x and y
+	return ((curr_x - old_x) ** 2 + (curr_y - old_y) ** 2) ** 0.5
+
+
+def get_angle(old_x, old_y, curr_x, curr_y): # angle
+	return asinh((curr_x - old_x) / (curr_y - old_y)) * 180 / 3.14
+
+
+def calculate_turn(current_angle, need_angle):
+	normalized_current = current_angle % 360
+	diff = (need_angle - normalized_current) % 360
+	turn_angle = diff - 360 if diff > 180 else diff
+	round_to_3 = round(turn_angle / 3) * 3
+	return round_to_3
+
+
+str = [{'x': 3, 'y': 4}, {'x': 0, 'y': 0}]
+curr_angle = 2.78  # value by sensor. It has range about -3.14 to 3.14
+curr_angle = curr_angle * 180 / 3.14  # in degrees
+print(get_x_y(str))
+print("movement: ", get_dist(get_x_y(str)[0], get_x_y(str)[1],
+                             get_x_y(str)[2], get_x_y(str)[3]))
+
+print(get_angle(get_x_y(str)[0], get_x_y(str)[1],
+                get_x_y(str)[2], get_x_y(str)[3]))
+
+print(curr_angle)
+
+need_angle = get_angle(get_x_y(str)[0], get_x_y(str)[1],
+                       get_x_y(str)[2], get_x_y(str)[3])
+
+print("angle: ", calculate_turn(curr_angle, need_angle))
+str.pop(0)
+str.pop(0)
+print(str)
